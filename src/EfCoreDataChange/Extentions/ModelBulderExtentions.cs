@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -6,6 +7,23 @@ using System.Reflection.Emit;
 
 namespace EfCoreDataChange
 {
+    /// <summary>
+    /// Represents a pair of shadow entity (left) end context entity (right).
+    /// </summary>
+    internal class PropertyForTransfer
+    {
+        internal PropertyInfo Left {get;set;}
+        internal PropertyInfo Right {get;set;}
+    }
+    /// <summary>
+    /// Represents a pair of context entity and shadow entity.
+    /// </summary>
+    internal class EntityPropsForTransfer
+    {
+        internal Type EntityType {get;set;}
+        internal Type TrackType {get;set;}
+        internal Dictionary<string,PropertyForTransfer>  Props {get;set;} = new Dictionary<string, PropertyForTransfer>();
+    }
     /// <summary>
     /// Represents a plugin for Microsoft.EntityFrameworkCore to support track and save enity change or delete.
     /// </summary>
@@ -15,18 +33,28 @@ namespace EfCoreDataChange
         /// Create extention for track entity change.
         /// </summary>
         /// <param name="modelBuilder">The <see cref="ModelBuilder"/> to enable track and save entity change.</param>
-        /// <param name="context">The <see cref="DbContext"/> Instance of you DBContext to be configured.</param>
+        /// <param name="contextType">The type of DbContext.</param>
         /// <returns>The <see cref="ModelBuilder"/> had enabled track and save entity change feature.</returns>
-        public static void CreateDataChangeTracking(this ModelBuilder modelBuilder, DbContext context)
+        public static ModelBuilder CreateDataChangeTracking(this ModelBuilder modelBuilder, Type contextType)
         {
-            AssemblyName myAsmName = new AssemblyName();
-            AssemblyBuilder myAsmBuilder = AssemblyBuilder.DefineDynamicAssembly(myAsmName,AssemblyBuilderAccess.Run);
-            //myAsmName.Name = Path.GetFileNameWithoutExtension(path)+".proxy.dll";
-            foreach( var entityType in modelBuilder.Model.GetEntityTypes().Where(v => !v.IsKeyless))
+            FieldInfo trackField = contextType.GetField("_trackField", BindingFlags.Static | BindingFlags.NonPublic);
+            if (trackField != null)
             {
-                var w = entityType.GetKeys().ToArray();
-
+                var trackableEntities = trackField.GetValue(null);
+                if (trackableEntities is Dictionary<Type, EntityPropsForTransfer>)
+                {
+                    foreach (var entityType in (Dictionary<Type, EntityPropsForTransfer>)trackableEntities)
+                    {
+                        modelBuilder.Entity(entityType.Value.TrackType).HasNoDiscriminator();
+                        modelBuilder.Entity(entityType.Value.TrackType).HasKey(entityType.Value.Props.Keys.ToArray());
+                        modelBuilder.Entity(entityType.Value.TrackType).Property("Date").HasValueGenerator<ValueGeneratorDataNow>();
+                        modelBuilder.Entity(entityType.Value.TrackType).HasIndex("Date").IsUnique(false);
+                        modelBuilder.Entity(entityType.Value.TrackType).Property("State").HasValueGenerator<ValueGeneratorEntityState>();
+                        modelBuilder.Entity(entityType.Value.TrackType).HasIndex("State").IsUnique(false);
+                    }
+                }
             }
+            return modelBuilder;
         }
     }
 }

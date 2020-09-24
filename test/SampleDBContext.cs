@@ -21,7 +21,7 @@ namespace test
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Dog>().HasKey(v => new {v.Name, v.Age});
-            modelBuilder.CreateDataChangeTracking(this);
+            modelBuilder.CreateDataChangeTracking(this.GetType());
         }
     }
 
