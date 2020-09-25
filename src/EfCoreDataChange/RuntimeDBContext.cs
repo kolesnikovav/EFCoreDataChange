@@ -39,6 +39,13 @@ namespace EfCoreDataChange
                 return _dTrackKeys;
             }
         }
+        /// <summary>
+        /// Runtime DbContext Type instance with track entities
+        /// </summary>
+        internal static Dictionary<Type, EntityPropsForTransfer> GetTrackableEntities(Type contextType)
+        {
+                return _dTrackKeys;
+        }
         private static Type CreateContextType()
         {
             AssemblyName myAsmName = new AssemblyName("___runtime_dbcontext_assembly___");

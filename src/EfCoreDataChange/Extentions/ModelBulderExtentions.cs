@@ -39,7 +39,7 @@ namespace EfCoreDataChange
             FieldInfo trackField = contextType.GetField("_isRuntimeConstructedForTrack", BindingFlags.Static | BindingFlags.NonPublic);
             if (trackField != null)
             {
-                var p = typeof(RuntimeDBContextExtention<>).MakeGenericType(new Type[] {contextType}).GetProperty("TrackableEntities", BindingFlags.Static | BindingFlags.NonPublic);
+                var p = typeof(RuntimeDBContextExtention<>).MakeGenericType(new Type[] {contextType.BaseType}).GetProperty("TrackableEntities", BindingFlags.Static | BindingFlags.NonPublic);
                 var trackableEntities = p.GetValue(null);
                 if (trackableEntities is Dictionary<Type, EntityPropsForTransfer>)
                 {
