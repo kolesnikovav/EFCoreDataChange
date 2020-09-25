@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
-using System.Reflection.Emit;
 
 namespace EfCoreDataChange
 {
@@ -37,10 +36,11 @@ namespace EfCoreDataChange
         /// <returns>The <see cref="ModelBuilder"/> had enabled track and save entity change feature.</returns>
         public static ModelBuilder CreateDataChangeTracking(this ModelBuilder modelBuilder, Type contextType)
         {
-            FieldInfo trackField = contextType.GetField("_trackField", BindingFlags.Static | BindingFlags.NonPublic);
+            FieldInfo trackField = contextType.GetField("_isRuntimeConstructedForTrack", BindingFlags.Static | BindingFlags.NonPublic);
             if (trackField != null)
             {
-                var trackableEntities = trackField.GetValue(null);
+                var p = typeof(RuntimeDBContextExtention<>).MakeGenericType(new Type[] {contextType}).GetProperty("TrackableEntities", BindingFlags.Static | BindingFlags.NonPublic);
+                var trackableEntities = p.GetValue(null);
                 if (trackableEntities is Dictionary<Type, EntityPropsForTransfer>)
                 {
                     foreach (var entityType in (Dictionary<Type, EntityPropsForTransfer>)trackableEntities)

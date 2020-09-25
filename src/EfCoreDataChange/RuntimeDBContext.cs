@@ -29,6 +29,16 @@ namespace EfCoreDataChange
                 return instance;
             }
         }
+        /// <summary>
+        /// Runtime DbContext Type instance with track entities
+        /// </summary>
+        internal static Dictionary<Type, EntityPropsForTransfer> TrackableEntities
+        {
+            get
+            {
+                return _dTrackKeys;
+            }
+        }
         private static Type CreateContextType()
         {
             AssemblyName myAsmName = new AssemblyName("___runtime_dbcontext_assembly___");
@@ -87,9 +97,9 @@ namespace EfCoreDataChange
                     _dTrackKeys.Add(entityKeyProps.EntityType, entityKeyProps);
                 }
             }
-            var fldTrackInfo = createdType.DefineField("_trackField", typeof(Dictionary<Type, EntityPropsForTransfer>), FieldAttributes.Static | FieldAttributes.Private);
+            var fldTrackInfo = createdType.DefineField("_isRuntimeConstructedForTrack", typeof(byte), FieldAttributes.Static | FieldAttributes.Private);
             createdType.CreateTypeInfo();
-            fldTrackInfo.SetValue(null, _dTrackKeys);
+            //fldTrackInfo.SetValue(null, _dTrackKeys);
             return createdType;
         }
 
