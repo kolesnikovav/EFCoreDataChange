@@ -1,24 +1,26 @@
 using System;
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using EfCoreDataChange;
 using Xunit;
 
 namespace test
 {
-    public class DataChangeTest
+    public class UnitTest1
     {
         [Fact]
-        public void DataChange_Test()
+        public void DataChangeTest1()
         {
-            using (var db = new SampleDBContext())
+            // Type T = RuntimeDBContextExtention<TestDBContext>.CreateContextType();
+            // var qq = Activator.CreateInstance(T);
+            // var qqq=1;
+            using (var db = RuntimeDBContextExtention<TestDBContext>.RuntimeContext)
             {
-                
-                Assert.Equal(1,1);
-                // var tableCat = db.Model.FindRuntimeEntityType(typeof(CatTest1)).GetTableName();
-                // var tableDog = db.Model.FindRuntimeEntityType(typeof(DogTest1)).GetTableName();
-                // Assert.NotEqual(tableCat, tableDog);
+                var cat1 = new Cat { Name = "Alice", Age = 2};
+                db.Cats.Add(cat1);
+                // db.SaveChangesWithTrackInfo();
+                // Assert.Equal(1,1);
             }
+
         }
     }
 }

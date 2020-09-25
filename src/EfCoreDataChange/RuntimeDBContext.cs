@@ -87,7 +87,9 @@ namespace EfCoreDataChange
                     _dTrackKeys.Add(entityKeyProps.EntityType, entityKeyProps);
                 }
             }
-            var fldTrackInfo = createdType.DefineField("_trackTypes", typeof(Dictionary<Type, EntityPropsForTransfer>), FieldAttributes.Static | FieldAttributes.Private);
+            var fldTrackInfo = createdType.DefineField("_trackField", typeof(Dictionary<Type, EntityPropsForTransfer>), FieldAttributes.Static | FieldAttributes.Private);
+            createdType.CreateTypeInfo();
+            fldTrackInfo.SetValue(null, _dTrackKeys);
             return createdType;
         }
 

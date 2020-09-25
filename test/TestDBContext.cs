@@ -3,12 +3,13 @@ using System.Linq;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using EfCoreDataChange;
 
 namespace test
 {
 
-    public class SampleDBContext : DbContext
+    public class TestDBContext : DbContext
     {
         public DbSet<Cat> Cats { get; set; }
         public DbSet<Dog> Dogs { get; set; }
@@ -16,6 +17,7 @@ namespace test
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseInMemoryDatabase("test");
+                        //   .ConfigureWarnings(x => x.Ignore(InMemoryEventId.TransactionIgnoredWarning));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
