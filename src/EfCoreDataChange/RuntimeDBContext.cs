@@ -39,13 +39,6 @@ namespace EfCoreDataChange
                 return _dTrackKeys;
             }
         }
-        /// <summary>
-        /// Runtime DbContext Type instance with track entities
-        /// </summary>
-        internal static Dictionary<Type, EntityPropsForTransfer> GetTrackableEntities(Type contextType)
-        {
-                return _dTrackKeys;
-        }
         private static Type CreateContextType()
         {
             AssemblyName myAsmName = new AssemblyName("___runtime_dbcontext_assembly___");
@@ -84,7 +77,7 @@ namespace EfCoreDataChange
                     ReflectionUtils.AddGetSetMethodsForProperty(pbState, "State", typeof(EntityState), createdTypeProp, fieldBuilderState);
 
                     FieldBuilder fieldBuilderDate = createdTypeProp.DefineField(CommonUtils.FieldName("_date"), typeof(DateTime), FieldAttributes.Private);
-                    var pbData = createdTypeProp.DefineProperty("Date", PropertyAttributes.None, CallingConventions.Standard, typeof(EntityState), null);
+                    var pbData = createdTypeProp.DefineProperty("Date", PropertyAttributes.None, CallingConventions.Standard, typeof(DateTime), null);
                     ReflectionUtils.AddGetSetMethodsForProperty(pbData, "Date", typeof(DateTime), createdTypeProp, fieldBuilderDate);
                     createdTypeProp.CreateTypeInfo();
 
@@ -93,6 +86,7 @@ namespace EfCoreDataChange
                     var pbTrack = createdType.DefineProperty(nameTrack, PropertyAttributes.None, CallingConventions.Standard, tP, null);
                     ReflectionUtils.AddGetSetMethodsForProperty(pbTrack, pbTrack, createdType, fieldBuilderDbSet);
                     entityKeyProps.TrackType = createdTypeProp;
+                    entityKeyProps.StatePropertyInfo = createdTypeProp.GetProperties(BindingFlags.Public| BindingFlags.Instance).Where(v => v.Name =="State").First();
                     foreach (var k in entityKeys)
                     {
                         entityKeyProps.Props.Add(k.Key, new PropertyForTransfer()
@@ -106,7 +100,6 @@ namespace EfCoreDataChange
             }
             var fldTrackInfo = createdType.DefineField("_isRuntimeConstructedForTrack", typeof(byte), FieldAttributes.Static | FieldAttributes.Private);
             createdType.CreateTypeInfo();
-            //fldTrackInfo.SetValue(null, _dTrackKeys);
             return createdType;
         }
 

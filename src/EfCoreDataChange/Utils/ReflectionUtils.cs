@@ -52,5 +52,8 @@ namespace EfCoreDataChange
             genusSetIL.Emit(OpCodes.Ret);
             pb.SetSetMethod(methodBuilderSet);
         }
+        internal static MethodInfo MethodSet(Type contextType, Type entityType)
+        => contextType.GetMethods(BindingFlags.Public).Where(v => v.Name == "Set" && v.IsGenericMethod).First()
+          .MakeGenericMethod(new Type[] {entityType});
     }
 }

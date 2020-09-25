@@ -6,7 +6,7 @@
     <Description>Entity Framework Core Extention for save and retrive information about adding, updating and deleting data changes with last modified timestamp.</Description>
     <Authors>Aleksandr Kolesnikov</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>EfCoreDataChange</AssemblyName>
     <PackageTags>Entity Framework Core;entity-framework-core;EF;Data;O/RM;Audit</PackageTags>

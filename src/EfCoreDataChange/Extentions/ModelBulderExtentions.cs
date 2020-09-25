@@ -21,6 +21,7 @@ namespace EfCoreDataChange
     {
         internal Type EntityType {get;set;}
         internal Type TrackType {get;set;}
+        internal PropertyInfo StatePropertyInfo {get;set;}
         internal Dictionary<string,PropertyForTransfer>  Props {get;set;} = new Dictionary<string, PropertyForTransfer>();
     }
     /// <summary>
@@ -39,9 +40,8 @@ namespace EfCoreDataChange
             FieldInfo trackField = contextType.GetField("_isRuntimeConstructedForTrack", BindingFlags.Static | BindingFlags.NonPublic);
             if (trackField != null)
             {
-                var p = typeof(RuntimeDBContextExtention<>).MakeGenericType(new Type[] {contextType.BaseType}).GetProperty("TrackableEntities", BindingFlags.Static | BindingFlags.NonPublic);
-                var trackableEntities = p.GetValue(null);
-                if (trackableEntities is Dictionary<Type, EntityPropsForTransfer>)
+                var trackableEntities = DbContextExtention.GetTrackInfo(contextType);
+                if (trackableEntities != null)
                 {
                     foreach (var entityType in (Dictionary<Type, EntityPropsForTransfer>)trackableEntities)
                     {
@@ -49,7 +49,6 @@ namespace EfCoreDataChange
                         modelBuilder.Entity(entityType.Value.TrackType).HasKey(entityType.Value.Props.Keys.ToArray());
                         modelBuilder.Entity(entityType.Value.TrackType).Property("Date").HasValueGenerator<ValueGeneratorDataNow>();
                         modelBuilder.Entity(entityType.Value.TrackType).HasIndex("Date").IsUnique(false);
-                        modelBuilder.Entity(entityType.Value.TrackType).Property("State").HasValueGenerator<ValueGeneratorEntityState>();
                         modelBuilder.Entity(entityType.Value.TrackType).HasIndex("State").IsUnique(false);
                     }
                 }

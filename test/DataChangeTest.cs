@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using EfCoreDataChange;
 using Xunit;
@@ -10,13 +11,12 @@ namespace test
         [Fact]
         public void DataChangeTest1()
         {
-            // Type T = RuntimeDBContextExtention<TestDBContext>.CreateContextType();
-            // var qq = Activator.CreateInstance(T);
-            // var qqq=1;
             using (var db = RuntimeDBContextExtention<TestDBContext>.RuntimeContext)
             {
                 var cat1 = new Cat { Name = "Alice", Age = 2};
                 db.Cats.Add(cat1);
+                db.PrepareTrackInfo();
+                db.SaveChanges();
                 // db.SaveChangesWithTrackInfo();
                 // Assert.Equal(1,1);
             }

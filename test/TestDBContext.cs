@@ -17,7 +17,6 @@ namespace test
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseInMemoryDatabase("test");
-                        //   .ConfigureWarnings(x => x.Ignore(InMemoryEventId.TransactionIgnoredWarning));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
