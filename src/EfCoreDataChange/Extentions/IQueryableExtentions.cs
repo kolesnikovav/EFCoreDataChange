@@ -24,15 +24,14 @@ namespace EfCoreDataChange
                 var trackData = trackableEntities[typeof(TSource)];
                 var trackSet = trackData.DbSetPropertyInfo.GetValue(context);
                 Type trackType = trackData.TrackType;
-
                 Func<TSource, object, bool> firstPredicate = (a, b) =>
                 {
                     var res = true;
-                    // foreach (var p in trackData.Props)
-                    // {
-                    //     res = res && p.Value.Left.GetValue(b) == p.Value.Right.GetValue(a);
-                    //     if (!res) return false;
-                    // }
+                    foreach (var p in trackData.Props)
+                    {
+                        res = res && p.Value.Left.GetValue(b) == p.Value.Right.GetValue(a);
+                        if (!res) return false;
+                    }
                     res = res && EntityState.Deleted.Equals(trackData.DbSetPropertyInfo.GetValue(b));
                     DateTime d = (DateTime)trackData.DatePropertyInfo.GetValue(b);
                     res = res && d > sinceMoment;
@@ -42,7 +41,7 @@ namespace EfCoreDataChange
                 {
                     return (trackSet as DbSet<object>).Single(v =>  firstPredicate(a,v)) != null;
                 };
-                return source.Where<TSource>(v => fnc(v)).ToList().AsQueryable();
+                return source.Where<TSource>(fnc).AsQueryable<TSource>();
             }
             return source;
         }

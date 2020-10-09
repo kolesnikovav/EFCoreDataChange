@@ -20,7 +20,9 @@ namespace test
                 db.Cats.Remove(cat1);
                 db.PrepareTrackInfo();
                 db.SaveChanges();
-                var qq = db.Cats.Deleted<TestDBContext,Cat>(db,DateTime.MinValue).ToList();
+                var qq = db.Cats.Deleted<TestDBContext,Cat>(db,DateTime.MinValue);
+
+                var aa=1;
                 // db.SaveChangesWithTrackInfo();
                 // Assert.Equal(1,1);
             }
