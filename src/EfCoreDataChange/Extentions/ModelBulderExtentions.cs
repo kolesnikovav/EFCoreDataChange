@@ -22,6 +22,9 @@ namespace EfCoreDataChange
         internal Type EntityType {get;set;}
         internal Type TrackType {get;set;}
         internal PropertyInfo StatePropertyInfo {get;set;}
+        internal PropertyInfo DatePropertyInfo {get;set;}
+        internal string NameOfTrackDbSet {get;set;}
+        internal PropertyInfo DbSetPropertyInfo {get;set;}
         internal Dictionary<string,PropertyForTransfer>  Props {get;set;} = new Dictionary<string, PropertyForTransfer>();
     }
     /// <summary>
@@ -49,7 +52,7 @@ namespace EfCoreDataChange
                         modelBuilder.Entity(entityType.Value.TrackType).HasKey(entityType.Value.Props.Keys.ToArray());
                         modelBuilder.Entity(entityType.Value.TrackType).Property("Date").HasValueGenerator<ValueGeneratorDataNow>();
                         modelBuilder.Entity(entityType.Value.TrackType).HasIndex("Date").IsUnique(false);
-                        modelBuilder.Entity(entityType.Value.TrackType).HasIndex("State").IsUnique(false);
+                        modelBuilder.Entity(entityType.Value.TrackType).HasIndex("StateOwner").IsUnique(false);
                     }
                 }
             }

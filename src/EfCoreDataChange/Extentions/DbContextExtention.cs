@@ -18,6 +18,13 @@ namespace EfCoreDataChange
             if (trackableEntities is Dictionary<Type, EntityPropsForTransfer>) return (Dictionary<Type, EntityPropsForTransfer>)trackableEntities;
             return null;
         }
+        internal static Dictionary<Type, EntityPropsForTransfer> GetTrackInfoRuntime(Type contextType)
+        {
+            var p = typeof(RuntimeDBContextExtention<>).MakeGenericType(new Type[] { contextType }).GetProperty("TrackableEntities", BindingFlags.Static | BindingFlags.NonPublic);
+            var trackableEntities = p.GetValue(null);
+            if (trackableEntities is Dictionary<Type, EntityPropsForTransfer>) return (Dictionary<Type, EntityPropsForTransfer>)trackableEntities;
+            return null;
+        }
         /// <summary>
         /// Create extention for track entity change.
         /// </summary>
@@ -30,7 +37,7 @@ namespace EfCoreDataChange
                 if (trackableEntities != null)
                 {
                     var changed = context.ChangeTracker.Entries().ToArray();
-                    foreach (var entry in changed)
+                    foreach (var entry in changed.Where(v => v.State == EntityState.Added || v.State == EntityState.Deleted || v.State ==EntityState.Modified))
                     {
                         if (trackableEntities.ContainsKey(entry.Metadata.ClrType))
                         {
@@ -41,7 +48,14 @@ namespace EfCoreDataChange
                                 p.Value.Left.SetValue(trackInstance, p.Value.Right.GetValue(entry.Entity));
                             }
                             data.StatePropertyInfo.SetValue(trackInstance, entry.State);
-                            context.Add(trackInstance);
+                            try
+                            {
+                                context.Add(trackInstance);
+                            }
+                            catch
+                            {
+                                context.Update(trackInstance);
+                            }
                         }
                     }
                 }

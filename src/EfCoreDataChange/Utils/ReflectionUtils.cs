@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 
 namespace EfCoreDataChange
 {
@@ -53,7 +54,10 @@ namespace EfCoreDataChange
             pb.SetSetMethod(methodBuilderSet);
         }
         internal static MethodInfo MethodSet(Type contextType, Type entityType)
-        => contextType.GetMethods(BindingFlags.Public).Where(v => v.Name == "Set" && v.IsGenericMethod).First()
+        => contextType.GetMethods(BindingFlags.Public| BindingFlags.Instance).Where(v => v.Name == "Set" && v.IsGenericMethod).First()
           .MakeGenericMethod(new Type[] {entityType});
+        internal static MethodInfo MethodAsNoTracking(Type entityType)
+        => typeof(Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions).GetTypeInfo().GetDeclaredMethod("AsNoTracking")
+        .MakeGenericMethod(new Type[] {entityType});
     }
 }

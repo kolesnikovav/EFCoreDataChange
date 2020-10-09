@@ -17,6 +17,10 @@ namespace test
                 db.Cats.Add(cat1);
                 db.PrepareTrackInfo();
                 db.SaveChanges();
+                db.Cats.Remove(cat1);
+                db.PrepareTrackInfo();
+                db.SaveChanges();
+                var qq = db.Cats.Deleted<TestDBContext,Cat>(db,DateTime.MinValue).ToList();
                 // db.SaveChangesWithTrackInfo();
                 // Assert.Equal(1,1);
             }

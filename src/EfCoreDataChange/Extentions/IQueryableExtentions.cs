@@ -16,27 +16,35 @@ namespace EfCoreDataChange
         /// <summary>
         /// Retrieves keys of entities deleted since moment.
         /// </summary>
-        public static IQueryable<TSource> Deleted<TContext, TSource>(this IQueryable<TSource> source, TContext context, DateTime sinceMoment) where TContext: DbContext
+        public static IQueryable<TSource> Deleted<TContext, TSource>(this IQueryable<TSource> source,TContext context, DateTime sinceMoment) where TContext: DbContext
         {
-            return null;
-            // var trackableEntities = DbContextExtention.GetTrackInfo(typeof(TContext));
-            // if (trackableEntities != null && trackableEntities.ContainsKey(typeof(TSource)))
-            // {
-            //     var mI = ReflectionUtils.MethodSet(typeof(TContext), typeof(TSource));
-            //     var res = mI.Invoke(context, null).Where 
+            var trackableEntities = DbContextExtention.GetTrackInfoRuntime(typeof(TContext));
+            if (trackableEntities != null && trackableEntities.ContainsKey(typeof(TSource)))
+            {
+                var trackData = trackableEntities[typeof(TSource)];
+                var trackSet = trackData.DbSetPropertyInfo.GetValue(context);
+                Type trackType = trackData.TrackType;
 
-            // }
-            // // var p = typeof(RuntimeDBContextExtention<>).MakeGenericType(new Type[] { typeof(TContext).BaseType }).GetProperty("TrackableEntities", BindingFlags.Static | BindingFlags.NonPublic);
-            // // var trackableEntities = p.GetValue(null);
-            // // if (trackableEntities is Dictionary<Type, EntityPropsForTransfer>)
-            // // {
-            // //     if ((trackableEntities as Dictionary<Type, EntityPropsForTransfer>).ContainsKey(typeof(TSource)))
-            // //     {
-            // //         var deletedKeys = (trackableEntities as Dictionary<Type, EntityPropsForTransfer>)[typeof(TSource)].TrackType;
-            // //     }
-
-            // // }
-            // return source.Where<TSource>().AsQueryable();
+                Func<TSource, object, bool> firstPredicate = (a, b) =>
+                {
+                    var res = true;
+                    // foreach (var p in trackData.Props)
+                    // {
+                    //     res = res && p.Value.Left.GetValue(b) == p.Value.Right.GetValue(a);
+                    //     if (!res) return false;
+                    // }
+                    res = res && EntityState.Deleted.Equals(trackData.DbSetPropertyInfo.GetValue(b));
+                    DateTime d = (DateTime)trackData.DatePropertyInfo.GetValue(b);
+                    res = res && d > sinceMoment;
+                    return res;
+                };
+                Func<TSource, bool> fnc = (a) =>
+                {
+                    return (trackSet as DbSet<object>).Single(v =>  firstPredicate(a,v)) != null;
+                };
+                return source.Where<TSource>(v => fnc(v)).ToList().AsQueryable();
+            }
+            return source;
         }
         /// <summary>
         /// Retrieves keys of changed entities (added or modified) since moment.

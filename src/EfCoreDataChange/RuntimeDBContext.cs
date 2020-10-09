@@ -72,9 +72,9 @@ namespace EfCoreDataChange
                         var pb = createdTypeProp.DefineProperty(k.Key, PropertyAttributes.None, CallingConventions.Standard, k.Value, null);
                         ReflectionUtils.AddGetSetMethodsForProperty(pb, k.Key, k.Value, createdTypeProp, fieldBuilder);
                     }
-                    FieldBuilder fieldBuilderState = createdTypeProp.DefineField(CommonUtils.FieldName("_state"), typeof(EntityState), FieldAttributes.Private);
-                    var pbState = createdTypeProp.DefineProperty("State", PropertyAttributes.None, CallingConventions.Standard, typeof(EntityState), null);
-                    ReflectionUtils.AddGetSetMethodsForProperty(pbState, "State", typeof(EntityState), createdTypeProp, fieldBuilderState);
+                    FieldBuilder fieldBuilderState = createdTypeProp.DefineField(CommonUtils.FieldName("_stateOwner"), typeof(EntityState), FieldAttributes.Private);
+                    var pbState = createdTypeProp.DefineProperty("StateOwner", PropertyAttributes.None, CallingConventions.Standard, typeof(EntityState), null);
+                    ReflectionUtils.AddGetSetMethodsForProperty(pbState, "StateOwner", typeof(EntityState), createdTypeProp, fieldBuilderState);
 
                     FieldBuilder fieldBuilderDate = createdTypeProp.DefineField(CommonUtils.FieldName("_date"), typeof(DateTime), FieldAttributes.Private);
                     var pbData = createdTypeProp.DefineProperty("Date", PropertyAttributes.None, CallingConventions.Standard, typeof(DateTime), null);
@@ -85,8 +85,10 @@ namespace EfCoreDataChange
                     FieldBuilder fieldBuilderDbSet = createdType.DefineField(CommonUtils.FieldName(entityType.ClrType + "_Track"), tP, FieldAttributes.Private);
                     var pbTrack = createdType.DefineProperty(nameTrack, PropertyAttributes.None, CallingConventions.Standard, tP, null);
                     ReflectionUtils.AddGetSetMethodsForProperty(pbTrack, pbTrack, createdType, fieldBuilderDbSet);
+                    entityKeyProps.NameOfTrackDbSet = nameTrack;
                     entityKeyProps.TrackType = createdTypeProp;
-                    entityKeyProps.StatePropertyInfo = createdTypeProp.GetProperties(BindingFlags.Public| BindingFlags.Instance).Where(v => v.Name =="State").First();
+                    entityKeyProps.StatePropertyInfo = createdTypeProp.GetProperties(BindingFlags.Public| BindingFlags.Instance).Where(v => v.Name =="StateOwner").First();
+                    entityKeyProps.DatePropertyInfo = createdTypeProp.GetProperties(BindingFlags.Public| BindingFlags.Instance).Where(v => v.Name =="Date").First();
                     foreach (var k in entityKeys)
                     {
                         entityKeyProps.Props.Add(k.Key, new PropertyForTransfer()
@@ -100,6 +102,12 @@ namespace EfCoreDataChange
             }
             var fldTrackInfo = createdType.DefineField("_isRuntimeConstructedForTrack", typeof(byte), FieldAttributes.Static | FieldAttributes.Private);
             createdType.CreateTypeInfo();
+
+            foreach(var t in _dTrackKeys)
+            {
+                var p = createdType.GetProperties().Where(v => v.Name ==t.Value.NameOfTrackDbSet ).First();
+                t.Value.DbSetPropertyInfo = p;
+            }
             return createdType;
         }
 
