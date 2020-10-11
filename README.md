@@ -1,3 +1,10 @@
+<a href="https://www.nuget.org/packages/EFCoreDataChange">
+    <img alt="Nuget (with prereleases)" src="https://img.shields.io/nuget/vpre/EFCoreDataChange">
+</a>
+<a href="https://www.nuget.org/packages/EFCoreDataChange">
+    <img alt="Nuget" src="https://img.shields.io/nuget/dt/EFCoreDataChange">
+</a>
+
 # EFCoreDataChange
 This is yet anover audit plugin for Entity Framework Core. It provide store about entity changes, and retrives deleted or modified data after specified time point with special requests.
 
