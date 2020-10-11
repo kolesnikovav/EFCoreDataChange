@@ -42,19 +42,33 @@ namespace EfCoreDataChange
                         if (trackableEntities.ContainsKey(entry.Metadata.ClrType))
                         {
                             EntityPropsForTransfer data = trackableEntities[entry.Metadata.ClrType];
-                            var trackInstance = Activator.CreateInstance(data.TrackType);
-                            foreach(var p in data.Props)
+                            var eKeys = entry.Metadata.GetKeys();
+                            List<object> keyVals = new List<object>();
+                            foreach (var k in eKeys)
                             {
-                                p.Value.Left.SetValue(trackInstance, p.Value.Right.GetValue(entry.Entity));
+                                foreach (var p in k.Properties)
+                                {
+                                    keyVals.Add(p.PropertyInfo.GetValue(entry.Entity));
+                                }
                             }
-                            data.StatePropertyInfo.SetValue(trackInstance, entry.State);
-                            try
+                            var fndTrack = context.Find(data.TrackType, keyVals.ToArray());
+                            bool trackIsFound = fndTrack != null;
+                            if (!trackIsFound)
                             {
-                                context.Add(trackInstance);
+                                fndTrack = Activator.CreateInstance(data.TrackType);
+                                foreach (var p in data.Props)
+                                {
+                                    p.Value.Left.SetValue(fndTrack, p.Value.Right.GetValue(entry.Entity));
+                                }
                             }
-                            catch
+                            data.StatePropertyInfo.SetValue(fndTrack, StateConversion.GetState(entry.State));
+                            if (!trackIsFound)
                             {
-                                context.Update(trackInstance);
+                                context.Add(fndTrack);
+                            }
+                            else
+                            {
+                                context.Update(fndTrack);
                             }
                         }
                     }

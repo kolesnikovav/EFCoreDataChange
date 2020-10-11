@@ -72,9 +72,9 @@ namespace EfCoreDataChange
                         var pb = createdTypeProp.DefineProperty(k.Key, PropertyAttributes.None, CallingConventions.Standard, k.Value, null);
                         ReflectionUtils.AddGetSetMethodsForProperty(pb, k.Key, k.Value, createdTypeProp, fieldBuilder);
                     }
-                    FieldBuilder fieldBuilderState = createdTypeProp.DefineField(CommonUtils.FieldName("_stateOwner"), typeof(EntityState), FieldAttributes.Private);
-                    var pbState = createdTypeProp.DefineProperty("StateOwner", PropertyAttributes.None, CallingConventions.Standard, typeof(EntityState), null);
-                    ReflectionUtils.AddGetSetMethodsForProperty(pbState, "StateOwner", typeof(EntityState), createdTypeProp, fieldBuilderState);
+                    FieldBuilder fieldBuilderState = createdTypeProp.DefineField(CommonUtils.FieldName("_stateOwner"), typeof(StateOfEntity), FieldAttributes.Private);
+                    var pbState = createdTypeProp.DefineProperty("StateOwner", PropertyAttributes.None, CallingConventions.Standard, typeof(StateOfEntity), null);
+                    ReflectionUtils.AddGetSetMethodsForProperty(pbState, "StateOwner", typeof(StateOfEntity), createdTypeProp, fieldBuilderState);
 
                     FieldBuilder fieldBuilderDate = createdTypeProp.DefineField(CommonUtils.FieldName("_date"), typeof(DateTime), FieldAttributes.Private);
                     var pbData = createdTypeProp.DefineProperty("Date", PropertyAttributes.None, CallingConventions.Standard, typeof(DateTime), null);
@@ -103,11 +103,12 @@ namespace EfCoreDataChange
             var fldTrackInfo = createdType.DefineField("_isRuntimeConstructedForTrack", typeof(byte), FieldAttributes.Static | FieldAttributes.Private);
             createdType.CreateTypeInfo();
 
-            foreach(var t in _dTrackKeys)
-            {
-                var p = createdType.GetProperties().Where(v => v.Name ==t.Value.NameOfTrackDbSet ).First();
-                t.Value.DbSetPropertyInfo = p;
-            }
+            // foreach(var t in _dTrackKeys)
+            // {
+            //     var a = Activator.CreateInstance(t.Value.TrackType);
+            //     t.Value.StatePropertyInfo = a.GetType().GetProperty("StateOwner");
+            //     t.Value.DatePropertyInfo = a.GetType().GetProperty("Date");
+            // }
             return createdType;
         }
 

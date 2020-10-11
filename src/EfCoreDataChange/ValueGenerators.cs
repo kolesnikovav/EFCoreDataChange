@@ -12,12 +12,4 @@ namespace EfCoreDataChange
             return DateTime.UtcNow;
         }
     }
-    internal class ValueGeneratorEntityState : ValueGenerator
-    {
-        public override bool GeneratesTemporaryValues => false;
-        protected override object NextValue(EntityEntry entry)
-        {
-            return entry.State;
-        }
-    }
 }

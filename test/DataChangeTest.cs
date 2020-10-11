@@ -20,9 +20,18 @@ namespace test
                 db.Cats.Remove(cat1);
                 db.PrepareTrackInfo();
                 db.SaveChanges();
-                var qq = db.Cats.Deleted<TestDBContext,Cat>(db,DateTime.MinValue);
+                var catsDeleted = db.Cats.Deleted<Cat>(db,DateTime.MinValue);
+                //Assert.Contains<Cat>(new Cat() {Id = 1}, catsDeleted);
 
-                var aa=1;
+                // db.Cats.Add(cat1);
+                // db.PrepareTrackInfo();
+                // db.SaveChanges();
+                var catsDeleted2 = db.Cats.Deleted<Cat>(db,DateTime.MinValue);
+                //Assert.Empty(catsDeleted2);
+
+                var catsChanged = db.Cats.AddedOrChanged<Cat>(db,DateTime.MinValue);
+
+                var aa=catsChanged.ToList();
                 // db.SaveChangesWithTrackInfo();
                 // Assert.Equal(1,1);
             }

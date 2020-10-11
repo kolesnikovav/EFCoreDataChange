@@ -24,7 +24,6 @@ namespace EfCoreDataChange
         internal PropertyInfo StatePropertyInfo {get;set;}
         internal PropertyInfo DatePropertyInfo {get;set;}
         internal string NameOfTrackDbSet {get;set;}
-        internal PropertyInfo DbSetPropertyInfo {get;set;}
         internal Dictionary<string,PropertyForTransfer>  Props {get;set;} = new Dictionary<string, PropertyForTransfer>();
     }
     /// <summary>
