@@ -26,7 +26,8 @@ namespace EfCoreDataChange
             return null;
         }
         /// <summary>
-        /// Create extention for track entity change.
+        /// Prepare auxillary data for entity changes.
+        /// Use this method before save changes in DbContext
         /// </summary>
         /// <param name="context">DbContext</param>
         public static void PrepareTrackInfo(this DbContext context)

@@ -60,6 +60,10 @@ namespace EfCoreDataChange
         }
         /// <summary>
         /// Retrieves keys of entities deleted since moment.
+        /// <param name="source">The DbSet of requested entities</param>
+        /// <param name="context">The <see cref="DbContext"/> Instance of you DBContext to be configured.</param>
+        /// <param name="sinceMoment">Time period after which you need to get deleted data</param>
+        /// <returns>Filtered DbSet</returns>
         /// </summary>
         public static IQueryable<TSource> Deleted<TSource>(this IQueryable<TSource> source,DbContext context, DateTime sinceMoment) where TSource: class
         {
@@ -80,6 +84,10 @@ namespace EfCoreDataChange
         }
         /// <summary>
         /// Retrieves keys of changed entities (added or modified) since moment.
+        /// <param name="source">The DbSet of requested entities</param>
+        /// <param name="context">The <see cref="DbContext"/> Instance of you DBContext to be configured.</param>
+        /// <param name="sinceMoment">Time period after which you need to get added or changed data</param>
+        /// <returns>Filtered DbSet</returns>
         /// </summary>
         public static IQueryable<TSource> AddedOrChanged<TSource>(this IQueryable<TSource> source,DbContext context, DateTime sinceMoment) where TSource: class
         {

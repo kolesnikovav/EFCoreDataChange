@@ -53,11 +53,11 @@ namespace EfCoreDataChange
             genusSetIL.Emit(OpCodes.Ret);
             pb.SetSetMethod(methodBuilderSet);
         }
-        internal static MethodInfo MethodSet(Type contextType, Type entityType)
-        => contextType.GetMethods(BindingFlags.Public| BindingFlags.Instance).Where(v => v.Name == "Set" && v.IsGenericMethod).First()
-          .MakeGenericMethod(new Type[] {entityType});
-        internal static MethodInfo MethodAsNoTracking(Type entityType)
-        => typeof(Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions).GetTypeInfo().GetDeclaredMethod("AsNoTracking")
-        .MakeGenericMethod(new Type[] {entityType});
+        // internal static MethodInfo MethodSet(Type contextType, Type entityType)
+        // => contextType.GetMethods(BindingFlags.Public| BindingFlags.Instance).Where(v => v.Name == "Set" && v.IsGenericMethod).First()
+        //   .MakeGenericMethod(new Type[] {entityType});
+        // internal static MethodInfo MethodAsNoTracking(Type entityType)
+        // => typeof(Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions).GetTypeInfo().GetDeclaredMethod("AsNoTracking")
+        // .MakeGenericMethod(new Type[] {entityType});
     }
 }
