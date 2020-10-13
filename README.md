@@ -54,3 +54,18 @@ Call PrepareTrackInfo() method before SaveChanges()
 
             }
 ```
+
+5. Register in Dependency Injection.
+Below is sample code how You can use DI.
+
+```csharp
+using EfCoreDataChange;
+
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddDbContext(
+                RuntimeDBContextExtention<MyDBContext>.RuntimeContextType,
+                options =>
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"));
+        }
+```

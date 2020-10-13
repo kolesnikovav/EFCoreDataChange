@@ -24,6 +24,11 @@ namespace test
             modelBuilder.Entity<Dog>().HasKey(v => new {v.Name, v.Age});
             modelBuilder.CreateDataChangeTracking(this.GetType());
         }
+        public TestDBContext(DbContextOptions<TestDBContext> options)
+        :base(options)
+        {}
+        public TestDBContext()
+        {}
     }
 
     public class Cat

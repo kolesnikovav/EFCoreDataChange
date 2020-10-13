@@ -17,6 +17,13 @@ namespace EfCoreDataChange
         private static readonly Dictionary<Type, EntityPropsForTransfer> _dTrackKeys = new Dictionary<Type, EntityPropsForTransfer>();
 
         private static Type _dbContextType;
+        /// <summary>
+        /// Runtime DbContext Type with track entities
+        /// </summary>
+        public static Type RuntimeContextType
+        {
+            get => RuntimeContext.GetType();
+        }
 
         /// <summary>
         /// Runtime DbContext Type instance with track entities
